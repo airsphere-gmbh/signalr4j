@@ -55,6 +55,7 @@ public class HeartbeatMonitor {
             mStopped = false;
 
             long interval = mKeepAliveData.getCheckInterval();
+            mKeepAliveData.setLastKeepAlive(Calendar.getInstance().getTimeInMillis());
 
             mExecutor = new ScheduledThreadPoolExecutor(1);
             mExecutor.scheduleAtFixedRate(new Runnable() {

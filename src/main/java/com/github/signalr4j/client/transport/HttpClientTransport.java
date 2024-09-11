@@ -84,7 +84,7 @@ public abstract class HttpClientTransport implements ClientTransport {
 
                 } catch (Throwable e) {
                     log(e);
-                    negotiationFuture.triggerError(new NegotiationException("There was a problem in the negotiation with the server", e));
+                    negotiationFuture.triggerError(new NegotiationException("There was a problem in the negotiation with the server ", e));
                 }
             }
         });

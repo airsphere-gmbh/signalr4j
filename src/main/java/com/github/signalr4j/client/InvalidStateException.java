@@ -17,3 +17,4 @@ public class InvalidStateException extends RuntimeException {
         super("The operation is not allowed in the '" + connectionState.toString() + "' state");
     }
 }
+

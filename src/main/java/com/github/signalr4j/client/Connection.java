@@ -6,6 +6,7 @@ See License.txt in the project root for license information.
 
 package com.github.signalr4j.client;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,7 +87,7 @@ public class Connection implements ConnectionBase {
 
     private Object mStartLock = new Object();
 
-    private boolean reconnectOnError = true;
+    private boolean reconnectOnError = false;
 
     /**
      * Initializes the connection with an URL
@@ -581,6 +582,7 @@ public class Connection implements ConnectionBase {
      * Triggers the Reconnecting event
      */
     protected void onReconnecting() {
+        //TODO Testing:
         changeState(ConnectionState.Connected, ConnectionState.Reconnecting);
 
         if (mOnReconnecting != null) {
@@ -652,6 +654,8 @@ public class Connection implements ConnectionBase {
                     mHeartbeatMonitor.stop();
                 }
 
+                changeState(ConnectionState.Connected, ConnectionState.Reconnecting);
+                //TODO Testing:
                 mTransport.abort(this);
 
                 onReconnecting();
@@ -782,8 +786,13 @@ public class Connection implements ConnectionBase {
     @Override
     public void onError(Throwable error, boolean mustCleanCurrentConnection) {
 
-        if(error != null)
+        if(error != null){
             log(error);
+        }
+        else {
+            error = new MissingExceptionException("");
+            error.fillInStackTrace();
+        }
 
         if (mustCleanCurrentConnection) {
             if ( (mState == ConnectionState.Connected || mState == ConnectionState.Reconnecting) && reconnectOnError) {
@@ -794,6 +803,7 @@ public class Connection implements ConnectionBase {
                 if (mOnError != null) {
                     mOnError.onError(error);
                 }
+                //TODO Testing:
                 disconnect();
             }
         } else {
@@ -824,8 +834,10 @@ public class Connection implements ConnectionBase {
             // if it is reconnecting and the connection cannot yet be established
             // therefore the mHeartbeatMonitor instance wouldn't be initialized with the KeepAliveData value
             KeepAliveData keepAliveData = mHeartbeatMonitor.getKeepAliveData();
-            if (keepAliveData == null && mKeepAliveData != null)
+            if (keepAliveData == null && mKeepAliveData != null){
                 keepAliveData = mKeepAliveData;
+                mKeepAliveData.setLastKeepAlive(Calendar.getInstance().getTimeInMillis());
+            }
 
             startTransport(keepAliveData, true);
         }
